@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Path Recommendation - SkillBridge</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js" defer></script>
+
+    <style>
+        :root {
+            --primary-dark: #2D3E6B;
+            --primary-cyan: #00BCD4;
+            --accent-purple: #9C27B0;
+            --neutral-white: #FFFFFF;
+            --dark-surface: #0F1419;
+            --dark-elevated: #1A1F2E;
+            --dark-base: #151922;
+            --dark-border: rgba(0, 188, 212, 0.3);
+            --glow-cyan: rgba(0, 188, 212, 0.4);
+            --glow-purple: rgba(156, 39, 176, 0.4);
+            --neutral-light: rgba(255, 255, 255, 0.85);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--dark-surface);
+            color: var(--neutral-white);
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        /* Enhanced Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(156, 39, 176, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(45, 62, 107, 0.2) 0%, transparent 50%);
+            animation: backgroundPulse 15s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        /* Animated Gradient Orbs */
+        .floating-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            z-index: -1;
+            animation: floatingOrb 20s infinite ease-in-out;
+        }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--accent-purple), transparent);
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--primary-cyan), transparent);
+            bottom: -150px;
+            right: -150px;
+            animation-delay: 7s;
+        }
+
+        .orb-3 {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, var(--primary-dark), transparent);
+            top: 50%;
+            left: 20%;
+            animation-delay: 14s;
+        }
+
+        /* Main Container */
+        .prediction-container {
+            width: 100%;
+            max-width: 700px;
+            background: linear-gradient(135deg, rgba(26, 31, 46, 0.95) 0%, rgba(15, 20, 25, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            padding: 3rem;
+            border-radius: 32px;
+            border: 1px solid var(--dark-border);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5),
+                        0 0 0 1px rgba(156, 39, 176, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        /* Glowing Top Border */
+        .prediction-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-purple), var(--primary-cyan), var(--accent-purple));
+            background-size: 200% 100%;
+            animation: gradientSlide 3s ease-in-out infinite;
+        }
+
+        /* Subtle Pattern Overlay */
+        .prediction-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(156, 39, 176, 0.05) 0%, 
+                transparent 30%, 
+                transparent 70%, 
+                rgba(0, 188, 212, 0.05) 100%);
+            pointer-events: none;
+        }
+
+        .form-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--neutral-white), var(--primary-cyan));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.75rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-subtitle {
+            margin-bottom: 3rem;
+            color: var(--neutral-light);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+            text-align: left;
+            position: relative;
+            /* z-index: 1;  <-- THIS LINE WAS REMOVED TO FIX THE LAYERING ISSUE */
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: var(--primary-cyan);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            background: rgba(21, 25, 34, 0.8);
+            border: 2px solid var(--dark-border);
+            color: var(--neutral-white);
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-cyan);
+            box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
+            background: rgba(21, 25, 34, 1);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Toggle Buttons */
+        .toggle-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .toggle-group input[type="radio"] {
+            opacity: 0;
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-group label {
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--dark-border);
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(21, 25, 34, 0.6);
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toggle-group label::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .toggle-group label:hover::before {
+            left: 100%;
+        }
+
+        .toggle-group label:hover {
+            border-color: var(--primary-cyan);
+            transform: translateY(-2px);
+        }
+
+        .toggle-group input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, var(--accent-purple), var(--primary-cyan));
+            border-color: transparent;
+            color: var(--neutral-white);
+            font-weight: 700;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--glow-cyan);
+        }
+
+        /* Enhanced Multi-Select Dropdowns */
+        .choices.is-open {
+            z-index: 100;
+        }
+        
+        .choices__inner {
+            background: rgba(21, 25, 34, 0.8) !important;
+            border-radius: 12px !important;
+            border: 2px solid var(--dark-border) !important;
+            padding: 0.75rem 1rem !important;
+            min-height: 50px !important;
+            color: var(--neutral-light) !important;
+            font-size: 1rem !important;
+            transition: all 0.3s ease !important;
+            backdrop-filter: blur(10px) !important;
+        }
+        
+        .choices__input {
+            background-color: transparent !important;
+            color: var(--neutral-white) !important;
+        }
+
+        .choices__inner:focus-within {
+            border-color: var(--primary-cyan) !important;
+            box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1) !important;
+        }
+
+        .choices__list--dropdown {
+            background: var(--dark-elevated) !important;
+            border: 1px solid var(--dark-border) !important;
+            border-radius: 12px !important;
+            margin-top: 8px !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .choices__list--dropdown .choices__item--selectable {
+            padding: 12px 16px !important;
+            color: var(--neutral-light) !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .choices__list--dropdown .choices__item--selectable.is-highlighted {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.2), rgba(0, 188, 212, 0.2)) !important;
+            color: var(--neutral-white) !important;
+        }
+
+        .choices__list--multiple .choices__item {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.3), rgba(0, 188, 212, 0.3)) !important;
+            border: 1px solid rgba(0, 188, 212, 0.5) !important;
+            color: var(--neutral-white) !important;
+            font-weight: 600 !important;
+            border-radius: 8px !important;
+            padding: 6px 12px !important;
+            margin: 4px !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .choices__list--multiple .choices__item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--glow-cyan);
+        }
+
+        .choices[data-type*="select-multiple"] .choices__button,
+        .choices[data-type*="text"] .choices__button {
+            border-left: 1px solid rgba(255, 255, 255, 0.3) !important;
+            opacity: 0.8 !important;
+            transition: opacity 0.2s ease !important;
+        }
+
+        .choices[data-type*="select-multiple"] .choices__button:hover {
+            opacity: 1 !important;
+        }
+
+        /* Submit Button */
+        .btn-primary {
+            width: 100%;
+            padding: 1.25rem 2rem;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--primary-cyan));
+            color: var(--neutral-white);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 1.5rem;
+            box-shadow: 0 8px 25px rgba(156, 39, 176, 0.4);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(156, 39, 176, 0.6);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Results Container */
+        #results-container {
+            margin-top: 3rem;
+            padding: 2rem;
+            border: 2px dashed var(--primary-cyan);
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(0, 188, 212, 0.05), rgba(156, 39, 176, 0.05));
+            display: none;
+            animation: fadeInScale 0.5s ease-out;
+        }
+
+        .result-title {
+            color: var(--primary-cyan);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .predicted-career {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-purple), var(--primary-cyan));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        #language-recommendation-container {
+            background: linear-gradient(135deg, rgba(0, 188, 212, 0.15), rgba(156, 39, 176, 0.15));
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            display: none;
+        }
+
+        #language-recommendation-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-cyan);
+        }
+
+        .btn-outline {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border: 2px solid var(--primary-cyan);
+            background: rgba(0, 188, 212, 0.1);
+            color: var(--primary-cyan);
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 1rem;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-cyan);
+            color: var(--dark-surface);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px var(--glow-cyan);
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes gradientSlide {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes backgroundPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        @keyframes floatingOrb {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(50px, -50px) scale(1.1); }
+            66% { transform: translate(-50px, 50px) scale(0.9); }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .prediction-container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+
+            .form-title {
+                font-size: 2rem;
+            }
+
+            .form-subtitle {
+                font-size: 1rem;
+            }
+
+            .toggle-group {
+                grid-template-columns: 1fr;
+            }
+
+            .predicted-career {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-orb orb-1"></div>
+    <div class="floating-orb orb-2"></div>
+    <div class="floating-orb orb-3"></div>
+
+    <div class="prediction-container">
+        <h2 class="form-title">Find Your Perfect Career Path</h2>
+        <p class="form-subtitle">Tell us about yourself to receive a personalized career recommendation powered by intelligent analysis.</p>
+
+        <form id="career-form">
+            <div class="form-group">
+                <label for="age" class="form-label">What is your age?</label>
+                <input type="number" id="age" class="form-input" required min="16" max="80" placeholder="e.g., 22">
+            </div>
+
+            <div class="form-group">
+                <label for="interests" class="form-label">Select Your Interests</label>
+                <select id="interests" multiple>
+                    <option value="Artificial Intelligence">Artificial Intelligence</option>
+                    <option value="Data Science">Data Science</option>
+                    <option value="Software Development">Software Development</option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="Cybersecurity">Cybersecurity</option>
+                    <option value="Machine Learning">Machine Learning</option>
+                    <option value="Database Management">Database Management</option>
+                    <option value="Cloud Computing">Cloud Computing</option>
+                    <option value="Mobile App Development">Mobile App Development</option>
+                    <option value="Computer Graphics">Computer Graphics</option>
+                    <option value="Game Development">Game Development</option>
+                    <option value="Bioinformatics">Bioinformatics</option>
+                    <option value="Robotics">Robotics</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="time-commitment" class="form-label">Weekly Time Commitment (Hours)</label>
+                <input type="number" id="time-commitment" class="form-input" required min="1" max="60" placeholder="e.g., 15">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Do you want a certificate for your studies?</label>
+                <div class="toggle-group">
+                    <div>
+                        <input type="radio" id="cert-yes" name="certificate" value="yes" required>
+                        <label for="cert-yes">Yes</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="cert-no" name="certificate" value="no">
+                        <label for="cert-no">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="languages-known" class="form-label">Select Programming Languages You Know</label>
+                <select id="languages-known" multiple>
+                    <option value="none">None</option>
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="sql">SQL</option>
+                    <option value="c++">C++</option>
+                    <option value="c#">C#</option>
+                    <option value="go">Go</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-primary">Predict My Career</button>
+        </form>
+
+        <div id="results-container">
+            <h3 class="result-title">Recommended Career Path:</h3>
+            <p id="predicted-career" class="predicted-career"></p>
+            
+            <div id="language-recommendation-container">
+                <h4 class="result-title">To get started, we recommend you learn:</h4>
+                <p id="language-recommendation-text"></p>
+            </div>
+
+            <p>Ready to start your journey? Explore our courses to gain the skills for this career!</p>
+            <a href="courses.html" class="btn-outline">Explore Courses & Roadmaps</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof Choices === 'undefined') {
+                alert('Could not load dropdown functionality. Please check your internet connection or disable any ad-blockers and try again.');
+                return;
+            }
+
+            const interestsSelect = new Choices('#interests', {
+                removeItemButton: true,
+                placeholder: true,
+                placeholderValue: 'Select one or more interests...',
+                classNames: { containerOuter: 'choices' }
+            });
+
+            const languagesSelect = new Choices('#languages-known', {
+                removeItemButton: true,
+                placeholder: true,
+                placeholderValue: 'Select languages or choose "None"...',
+                classNames: { containerOuter: 'choices' }
+            });
+
+            const careerForm = document.getElementById('career-form');
+            const resultsContainer = document.getElementById('results-container');
+            const predictedCareerElement = document.getElementById('predicted-career');
+            const langRecContainer = document.getElementById('language-recommendation-container');
+            const langRecText = document.getElementById('language-recommendation-text');
+            const submitButton = careerForm.querySelector('button[type="submit"]');
+
+            careerForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const interestsValue = interestsSelect.getValue(true).join(',');
+                let languagesValue = languagesSelect.getValue(true);
+
+                if (languagesValue.includes('none') || languagesValue.length === 0) {
+                    languagesValue = 'none';
+                } else {
+                    languagesValue = languagesValue.join(',');
+                }
+
+                if (!interestsValue) {
+                    alert('Please select at least one interest.');
+                    return;
+                }
+
+                const originalButtonText = submitButton.textContent;
+                submitButton.textContent = 'Analyzing...';
+                submitButton.disabled = true;
+
+                const formData = {
+                    age: document.getElementById('age').value,
+                    interests: interestsValue,
+                    time_commitment: document.getElementById('time-commitment').value,
+                    certificate: document.querySelector('input[name="certificate"]:checked').value,
+                    languages_known: languagesValue
+                };
+
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/predict', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Prediction request failed.');
+                    }
+
+                    const result = await response.json();
+                    predictedCareerElement.textContent = result.predicted_career;
+
+                    if (result.language_recommendation) {
+                        langRecText.textContent = result.language_recommendation;
+                        langRecContainer.style.display = 'block';
+                    } else {
+                        langRecContainer.style.display = 'none';
+                    }
+                    
+                    resultsContainer.style.display = 'block';
+                    resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                } catch (error) {
+                    alert(`Error: ${error.message}`);
+                    console.error("Prediction failed:", error);
+                } finally {
+                    submitButton.textContent = originalButtonText;
+                    submitButton.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

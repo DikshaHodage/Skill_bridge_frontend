@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - SkillForge</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="signup-page">
+    <div class="floating-element floating-1"></div>
+    <div class="floating-element floating-2"></div>
+    <div class="floating-element floating-3"></div>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="logo">SKILLBRIDGE</div>
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">Join thousands of learners advancing their careers</p>
+        </div>
+
+        <form class="auth-form" id="signupForm" novalidate>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="firstName">First Name</label>
+                    <input 
+                        type="text" 
+                        class="form-input" 
+                        id="firstName" 
+                        name="firstName" 
+                        placeholder="Enter your first name"
+                        required
+                    >
+                    <div class="error-message">Please enter your first name</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="lastName">Last Name</label>
+                    <input 
+                        type="text" 
+                        class="form-input" 
+                        id="lastName" 
+                        name="lastName" 
+                        placeholder="Enter your last name"
+                        required
+                    >
+                    <div class="error-message">Please enter your last name</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="email">Email Address</label>
+                <input 
+                    type="email" 
+                    class="form-input" 
+                    id="email" 
+                    name="email" 
+                    placeholder="Enter your email address"
+                    required
+                >
+                <div class="error-message">Please enter a valid email address</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input 
+                    type="password" 
+                    class="form-input" 
+                    id="password" 
+                    name="password" 
+                    placeholder="Create a strong password"
+                    required
+                >
+                <div class="password-strength">
+                    <div class="strength-bar">
+                        <div class="strength-fill"></div>
+                    </div>
+                    <div class="strength-text">Password strength: <span id="strengthLevel">Weak</span></div>
+                </div>
+                <div class="error-message">Password must be at least 8 characters with uppercase, lowercase, and number</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="confirmPassword">Confirm Password</label>
+                <input 
+                    type="password" 
+                    class="form-input" 
+                    id="confirmPassword" 
+                    name="confirmPassword" 
+                    placeholder="Confirm your password"
+                    required
+                >
+                <div class="error-message">Passwords do not match</div>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" class="checkbox-input" id="agreeTerms" name="agreeTerms" required>
+                <label class="checkbox-label" for="agreeTerms">
+                    I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                </label>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                Create Account
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Already have an account? <a href="signin.html">Sign In</a></p>
+        </div>
+    </div>
+
+    <script>
+        class SignupValidator {
+            constructor() {
+                this.form = document.getElementById('signupForm');
+                this.submitBtn = document.getElementById('submitBtn');
+                this.initializeValidation();
+            }
+
+            initializeValidation() {
+                // Real-time validation on input
+                const inputs = this.form.querySelectorAll('.form-input');
+                inputs.forEach(input => {
+                    input.addEventListener('blur', () => this.validateField(input));
+                    input.addEventListener('input', () => this.clearError(input));
+                });
+
+                // Special handling for password
+                const passwordInput = document.getElementById('password');
+                passwordInput.addEventListener('input', () => this.updatePasswordStrength());
+
+                // Special handling for confirm password
+                const confirmPasswordInput = document.getElementById('confirmPassword');
+                confirmPasswordInput.addEventListener('input', () => this.validatePasswordMatch());
+
+                // Form submission
+                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+            }
+
+            validateField(input) {
+                const group = input.closest('.form-group');
+                let isValid = true;
+                let errorMessage = '';
+
+                switch (input.type) {
+                    case 'text':
+                        if (!input.value.trim()) {
+                            isValid = false;
+                            errorMessage = `Please enter your ${input.name.replace(/([A-Z])/g, ' $1').toLowerCase()}`;
+                        } else if (input.value.trim().length < 2) {
+                            isValid = false;
+                            errorMessage = 'Name must be at least 2 characters long';
+                        }
+                        break;
+
+                    case 'email':
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!input.value.trim()) {
+                            isValid = false;
+                            errorMessage = 'Email address is required';
+                        } else if (!emailRegex.test(input.value)) {
+                            isValid = false;
+                            errorMessage = 'Please enter a valid email address';
+                        }
+                        break;
+
+                    case 'password':
+                        if (input.id === 'password') {
+                            if (!this.isPasswordStrong(input.value)) {
+                                isValid = false;
+                                errorMessage = 'Password must be at least 8 characters with uppercase, lowercase, and number';
+                            }
+                        } else if (input.id === 'confirmPassword') {
+                            const password = document.getElementById('password').value;
+                            if (input.value !== password) {
+                                isValid = false;
+                                errorMessage = 'Passwords do not match';
+                            }
+                        }
+                        break;
+                }
+
+                this.setFieldState(group, isValid, errorMessage);
+                return isValid;
+            }
+
+            isPasswordStrong(password) {
+                const minLength = 8;
+                const hasUpper = /[A-Z]/.test(password);
+                const hasLower = /[a-z]/.test(password);
+                const hasNumber = /\d/.test(password);
+                
+                return password.length >= minLength && hasUpper && hasLower && hasNumber;
+            }
+
+            updatePasswordStrength() {
+                const password = document.getElementById('password').value;
+                const strengthIndicator = document.querySelector('.password-strength');
+                const strengthFill = document.querySelector('.strength-fill');
+                const strengthLevel = document.getElementById('strengthLevel');
+
+                if (password.length === 0) {
+                    strengthIndicator.style.display = 'none';
+                    return;
+                }
+
+                strengthIndicator.style.display = 'block';
+
+                let score = 0;
+                let level = 'Weak';
+                let className = 'weak';
+
+                // Length check
+                if (password.length >= 8) score++;
+                if (password.length >= 12) score++;
+
+                // Character variety
+                if (/[A-Z]/.test(password)) score++;
+                if (/[a-z]/.test(password)) score++;
+                if (/\d/.test(password)) score++;
+                if (/[^A-Za-z\d]/.test(password)) score++;
+
+                if (score >= 4) {
+                    level = 'Strong';
+                    className = 'strong';
+                } else if (score >= 2) {
+                    level = 'Medium';
+                    className = 'medium';
+                }
+
+                strengthFill.className = `strength-fill ${className}`;
+                strengthLevel.textContent = level;
+            }
+
+            validatePasswordMatch() {
+                const confirmPasswordInput = document.getElementById('confirmPassword');
+                if (confirmPasswordInput.value) {
+                    this.validateField(confirmPasswordInput);
+                }
+            }
+
+            setFieldState(group, isValid, errorMessage = '') {
+                const errorEl = group.querySelector('.error-message');
+                
+                group.classList.remove('error', 'success');
+                
+                if (isValid) {
+                    group.classList.add('success');
+                } else {
+                    group.classList.add('error');
+                    if (errorEl && errorMessage) {
+                        errorEl.textContent = errorMessage;
+                    }
+                }
+            }
+
+            clearError(input) {
+                const group = input.closest('.form-group');
+                group.classList.remove('error');
+            }
+
+            validateForm() {
+                let isValid = true;
+                const inputs = this.form.querySelectorAll('.form-input');
+                
+                inputs.forEach(input => {
+                    if (!this.validateField(input)) {
+                        isValid = false;
+                    }
+                });
+
+                // Check terms agreement
+                const agreeTerms = document.getElementById('agreeTerms');
+                if (!agreeTerms.checked) {
+                    isValid = false;
+                    // You could show an error for terms here
+                }
+
+                return isValid;
+            }
+
+            async handleSubmit(e) {
+                e.preventDefault();
+
+                if (!this.validateForm()) {
+                    return;
+                }
+
+                this.submitBtn.classList.add('loading');
+                this.submitBtn.textContent = '';
+
+                try {
+                    const formData = new FormData(this.form);
+                    const data = Object.fromEntries(formData.entries());
+
+                    const response = await fetch('http://localhost:5000/api/auth/signup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        alert('Account created successfully! Welcome to SkillBridge!');
+                        console.log('User registered. Token:', result.token);
+                        localStorage.setItem('token', result.token);
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        throw new Error(result.msg || 'Something went wrong during registration.');
+                    }
+                } catch (error) {
+                    alert(error.message);
+                } finally {
+                    this.submitBtn.classList.remove('loading');
+                    this.submitBtn.textContent = 'Create Account';
+                }
+            }
+        }
+
+        // Initialize validation when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new SignupValidator();
+        });
+    </script>
+</body>
+</html>

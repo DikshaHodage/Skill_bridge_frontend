@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SkillBridge</title>
+    <link rel="stylesheet" href="style.css"/>
+    <style>
+        /* New: Dashboard Layout inspired by Infosys Springboard */
+        .dashboard-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* New: Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--dark-elevated);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .sidebar .logo {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            width: 100%;
+            padding: 0;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-cyan);
+            background: rgba(0, 188, 212, 0.1);
+        }
+
+        .nav-item.active .nav-link {
+            background: rgba(0, 188, 212, 0.15);
+            color: var(--primary-cyan);
+        }
+
+        .nav-item.active .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 80%;
+            background: var(--primary-cyan);
+            border-radius: 2px;
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            color: var(--primary-cyan);
+        }
+        
+        .sidebar-footer-links {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+        }
+
+        /* New: Main Content Styles */
+        .main-content {
+            margin-left: 280px; /* Offset to make space for the fixed sidebar */
+            flex-grow: 1;
+            padding: 2rem;
+            padding-top: 0;
+            position: relative;
+        }
+
+        /* New: Dashboard Header (replaces old navbar) */
+        .dashboard-header {
+            position: sticky;
+            top: 0;
+            background: rgba(15, 20, 25, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem 2rem;
+            margin: 0 -2rem; /* Stretch to edge */
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            margin-right: 1rem;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1.2rem 0.8rem 3rem;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            background: rgba(26, 31, 46, 0.8);
+            color: var(--neutral-white);
+            font-size: 1rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .header-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--primary-cyan);
+        }
+
+        /* Dashboard-specific card grid & styles (adapted from old file) */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .dashboard-grid-two {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .dashboard-card {
+            background: linear-gradient(135deg, rgba(26, 31, 46, 0.9) 0%, rgba(15, 20, 25, 0.95) 100%);
+            border-radius: 24px;
+            padding: 2.5rem;
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 188, 212, 0.2);
+        }
+
+        .dashboard-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-cyan);
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-card p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+        
+        /* New: Profile section from image */
+        .profile-section-card {
+            background: #1A1F2E; /* Match the dark background of the image */
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            border-radius: 24px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-doodle-bg {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 50%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" preserveAspectRatio="none"><path d="M50 250 Q150 150, 250 220 T450 180 T650 250 T850 150 T950 200" fill="none" stroke="rgba(0, 188, 212, 0.5)" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="250" r="10" fill="rgba(0, 188, 212, 0.5)"/><circle cx="950" cy="200" r="10" fill="rgba(0, 188, 212, 0.5)"/></svg>');
+            background-repeat: no-repeat;
+            background-size: cover;
+            opacity: 0.2;
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .profile-header .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .profile-content {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .profile-picture {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-cyan);
+        }
+
+        .profile-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .profile-details h4 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-contact {
+            display: flex;
+            gap: 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+
+        .profile-contact span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* New: Assigned Trainings & Badges Section */
+        .assigned-trainings {
+            margin-top: 2rem;
+        }
+        
+        .badges-section {
+            margin-top: 2rem;
+        }
+
+        .badge-grid {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .badge-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(0, 188, 212, 0.05);
+            border: 1px solid rgba(0, 188, 212, 0.2);
+            border-radius: 12px;
+        }
+
+        .badge-card img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+        
+        .badge-info h4 {
+            color: var(--neutral-white);
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .badge-info p {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Overriding old card styles to fit new layout */
+        .my-courses-list, .preference-list {
+            margin-top: 1.5rem;
+        }
+        .my-courses-list li, .preference-list li {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        
+        /* NEW: Responsive adjustments */
+        @media (max-width: 992px) {
+            .dashboard-layout {
+                flex-direction: column;
+            }
+            .sidebar {
+                position: static;
+                width: 100%;
+                border-right: none;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                padding: 1rem;
+            }
+            .sidebar .logo {
+                margin-bottom: 0;
+            }
+            .sidebar-nav {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+            .nav-item {
+                margin-bottom: 0;
+            }
+            .nav-link {
+                flex-direction: column;
+                padding: 0.5rem;
+                gap: 0.25rem;
+            }
+            .nav-item.active .nav-link::before {
+                display: none;
+            }
+            .sidebar-footer-links {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+                padding-top: 1rem;
+            }
+            .dashboard-header {
+                position: static;
+                margin: 0 -2rem;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-bar {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+            .dashboard-grid-two {
+                grid-template-columns: 1fr;
+            }
+            .profile-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="logo">SKILLBRIDGE</div>
+            <ul class="sidebar-nav">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <span class="nav-icon">🏠</span> Home
+                    </a>
+                </li>
+                <li class="nav-item active" data-content="dashboard">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">👤</span> My Dashboard
+                    </a>
+                </li>
+                <li class="nav-item" data-content="roadmap">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">🗺️</span> My Roadmap
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="courses.html" class="nav-link">
+                        <span class="nav-icon">📚</span> My Courses
+                    </a>
+                </li>
+                <li class="nav-item" data-content="interests">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">💡</span> My Interests
+                    </a>
+                </li>
+                <li class="nav-item" data-content="achievements">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">🏅</span> Achievements
+                    </a>
+                </li>
+                <li class="nav-item" data-content="progress">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">📊</span> My Progress
+                    </a>
+                </li>
+            </ul>
+            <ul class="sidebar-footer-links">
+                 <li class="nav-item" data-content="settings">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">⚙️</span> Settings
+                    </a>
+                </li>
+                 <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">❔</span> Help
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="What do you want to learn?">
+                </div>
+                <div class="header-profile">
+                    <button class="btn btn-outline" id="logoutBtn">Log Out</button>
+                    <img id="headerProfileImage" src="https://via.placeholder.com/40" alt="User Profile">
+                </div>
+            </header>
+
+            <div id="dashboardContent" class="content-section active">
+                <div class="dashboard-grid">
+                    <div class="dashboard-grid-two">
+                        <div class="profile-section-card">
+                            <div class="profile-header">
+                                <h3 style="margin-bottom: 0;">Profile</h3>
+                                <button id="editProfileBtn" class="btn btn-outline">Edit Profile</button>
+                            </div>
+                            <div class="profile-content">
+                                <img id="profileImage" src="https://via.placeholder.com/120" alt="User Profile Image" class="profile-picture">
+                                <div class="profile-details">
+                                    <h4 id="profileName"></h4>
+                                    <div class="profile-contact">
+                                        <span id="profileEmail"></span>
+                                    </div>
+                                    <p id="profileBio" style="margin-top: 1rem;"></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-card">
+                            <h3>Learning Hours</h3>
+                            <p style="margin-bottom: 1.5rem;">Total learning hours this year.</p>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" id="learningHoursBar" style="width: 75%;"></div>
+                            </div>
+                            <div class="progress-text">Progress: <span id="learningHoursText">75%</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card assigned-trainings">
+                        <h3>Assigned Trainings</h3>
+                        <ul class="my-courses-list" id="myCoursesList">
+                            <li>
+                                <p>No courses found. <a href="courses.html" style="color: var(--primary-cyan);">Start learning!</a></p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="roadmapContent" class="content-section">
+    <div class="dashboard-card">
+        <h3>My Saved Roadmaps</h3>
+        <p>This is your collection of saved roadmaps to guide your learning journey.</p>
+        <ul class="my-courses-list" id="myRoadmapsList">
+            </ul>
+    </div>
+</div>
+
+            <div id="interestsContent" class="content-section">
+             <div class="dashboard-card">
+            <h3>My Interests (Wishlist)</h3>
+            <p>This is your wishlist of courses you are interested in taking.</p>
+            <ul class="my-courses-list" id="myInterestsList">
+            </ul>
+            </div>
+            </div>
+
+            <div id="achievementsContent" class="content-section">
+                <div class="dashboard-card badges-section">
+                    <h3>Achievements</h3>
+                    <p>Here you can see all the badges and certifications you have earned.</p>
+                    <div class="badge-grid">
+                        <div class="badge-card">
+                            <img src="https://via.placeholder.com/60" alt="Duelist Badge">
+                            <div class="badge-info">
+                                <h4>Duelist</h4>
+                                <p>Awarded on: Jun 14, 2025</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="progressContent" class="content-section">
+                <div class="dashboard-card">
+                    <h3>My Progress</h3>
+                    <p>You have <span id="coursesInProgress">0</span> courses in progress.</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="inProgressBar"></div>
+                    </div>
+                    <div class="progress-text">Progress: <span id="inProgressText">0%</span></div>
+                    
+                    <p style="margin-top: 1.5rem;">You have completed <span id="coursesCompleted">0</span> courses.</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="completedBar"></div>
+                    </div>
+                    <div class="progress-text">Completed: <span id="completedText">0%</span></div>
+                </div>
+            </div>
+            
+            <div id="settingsContent" class="content-section">
+                <div class="dashboard-card">
+                    <h3>Settings</h3>
+                    <p>Manage your account settings, notifications, and privacy preferences here. This section is currently under development.</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" style="float: right;">&times;</span>
+            <h3 id="modalTitle">Edit Profile</h3>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label class="form-label">First Name</label>
+                    <input type="text" class="form-input" id="editFirstName" name="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" class="form-input" id="editLastName" name="lastName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bio</label>
+                    <textarea class="form-input" id="editBio" name="bio" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Profile Image Upload</label>
+                    <input type="file" class="form-input" id="profileImageUpload" name="profileImage">
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+        </div>
+    </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. SETUP: Constants and Variables ---
+        const token = localStorage.getItem('token');
+        
+        // Main page elements
+        const logoutBtn = document.getElementById('logoutBtn');
+        
+        // Profile elements and modal
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const profileModal = document.getElementById('profileModal');
+        const profileForm = document.getElementById('profileForm');
+        const profileImage = document.getElementById('profileImage');
+        const headerProfileImage = document.getElementById('headerProfileImage');
+        const profileName = document.getElementById('profileName');
+        const profileEmail = document.getElementById('profileEmail');
+        const profileBio = document.getElementById('profileBio');
+        const editFirstName = document.getElementById('editFirstName');
+        const editLastName = document.getElementById('editLastName');
+        const editBio = document.getElementById('editBio');
+        const profileImageUpload = document.getElementById('profileImageUpload');
+        const modalCloseBtn = profileModal.querySelector('.modal-close');
+        
+        // Progress bar elements
+        const coursesInProgressSpan = document.getElementById('coursesInProgress');
+        const coursesCompletedSpan = document.getElementById('coursesCompleted');
+        const inProgressBar = document.getElementById('inProgressBar');
+        const completedBar = document.getElementById('completedBar');
+        const inProgressText = document.getElementById('inProgressText');
+        const completedText = document.getElementById('completedText');
+
+        // --- 2. DATA MAPS: For displaying titles ---
+        const courseDataMap = {
+            'infosys-web-dev': { title: 'Infosys Springboard Web Dev' },
+            'udemy-full-stack-js': { title: 'Udemy Full Stack JavaScript' },
+            'coursera-ml-spec': { title: 'Coursera: Machine Learning Specialization' },
+            'ms-ai-fundamentals': { title: 'Microsoft AI Fundamentals' },
+            'google-cybersecurity-cert': { title: 'Google Cybersecurity Professional Certificate' },
+            'network-security-basics': { title: 'Network Security Basics' },
+            'aws-solutions-architect': { title: 'AWS Certified Solutions Architect' }
+        };
+
+        const roadmapDataMap = {
+            'frontend': { title: 'Frontend Developer Roadmap' },
+            'backend': { title: 'Backend Developer Roadmap' },
+            'mobile': { title: 'Mobile Developer Roadmap' },
+            'ai-ml': { title: 'AI/ML Engineer Roadmap' },
+            'devops': { title: 'DevOps Engineer Roadmap' },
+            'data-science': { title: 'Data Scientist Roadmap' }
+        };
+
+        // --- 3. ASYNC FUNCTIONS: Fetching data from the server ---
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/profile', {
+                    headers: { 'Content-Type': 'application/json', 'x-auth-token': token }
+                });
+                if (!response.ok) throw new Error('Failed to fetch user data.');
+                const user = await response.json();
+                
+                profileName.textContent = `${user.firstName} ${user.lastName}`;
+                profileEmail.textContent = user.email;
+                profileBio.textContent = user.bio || '';
+                profileImage.src = user.profilePicture || 'https://via.placeholder.com/120';
+                headerProfileImage.src = user.profilePicture || 'https://via.placeholder.com/40';
+                editFirstName.value = user.firstName;
+                editLastName.value = user.lastName;
+                editBio.value = user.bio || '';
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                // Redirect if token is invalid
+                localStorage.removeItem('token');
+                window.location.href = 'signin.html';
+            }
+        };
+
+        const fetchUserCourses = async () => {
+            // This is a placeholder; you would implement the backend for this
+            // For now, it just shows the default message.
+            const myCoursesList = document.getElementById('myCoursesList');
+            myCoursesList.innerHTML = `<li><p>No courses found. <a href="courses.html" style="color: var(--primary-cyan);">Start learning!</a></p></li>`;
+        };
+
+        const fetchUserWishlist = async () => {
+            try {
+                const myInterestsList = document.getElementById('myInterestsList');
+                if (!myInterestsList) return;
+                const response = await fetch('http://localhost:5000/api/courses/wishlist', {
+                    headers: { 'Content-Type': 'application/json', 'x-auth-token': token }
+                });
+                if (!response.ok) throw new Error('Failed to fetch wishlist');
+                const wishlistedCourses = await response.json();
+                
+                myInterestsList.innerHTML = ''; 
+                if (wishlistedCourses.length > 0) {
+                    wishlistedCourses.forEach(courseId => {
+                        const courseTitle = courseDataMap[courseId]?.title || 'Unknown Course';
+                        const listItem = document.createElement('li');
+                        listItem.className = 'wishlist-item';
+                        listItem.innerHTML = `<p>${courseTitle}</p>`;
+                        myInterestsList.appendChild(listItem);
+                    });
+                } else {
+                    myInterestsList.innerHTML = '<li><p>No courses in your wishlist. <a href="courses.html" style="color: var(--primary-cyan);">Add some!</a></p></li>';
+                }
+            } catch (error) {
+                console.error('Failed to fetch user wishlist:', error);
+                const myInterestsList = document.getElementById('myInterestsList');
+                if(myInterestsList) myInterestsList.innerHTML = '<li><p>Could not load wishlist.</p></li>';
+            }
+        };
+
+        const fetchUserRoadmaps = async () => {
+            try {
+                const myRoadmapsList = document.getElementById('myRoadmapsList');
+                if (!myRoadmapsList) return;
+                const response = await fetch('http://localhost:5000/api/roadmaps/my-roadmaps', {
+                    headers: { 'Content-Type': 'application/json', 'x-auth-token': token }
+                });
+                if (!response.ok) throw new Error('Failed to fetch saved roadmaps');
+                const savedRoadmaps = await response.json();
+                
+                myRoadmapsList.innerHTML = ''; 
+                if (savedRoadmaps.length > 0) {
+                    savedRoadmaps.forEach(roadmapId => {
+                        const roadmapTitle = roadmapDataMap[roadmapId]?.title || 'Unknown Roadmap';
+                        const listItem = document.createElement('li');
+                        listItem.className = 'wishlist-item';
+                        listItem.innerHTML = `<p>${roadmapTitle}</p>`;
+                        myRoadmapsList.appendChild(listItem);
+                    });
+                } else {
+                    myRoadmapsList.innerHTML = '<li><p>No saved roadmaps. <a href="courses.html" style="color: var(--primary-cyan);">Save one!</a></p></li>';
+                }
+            } catch (error) {
+                console.error('Failed to fetch user roadmaps:', error);
+                const myRoadmapsList = document.getElementById('myRoadmapsList');
+                if (myRoadmapsList) myRoadmapsList.innerHTML = '<li><p>Could not load roadmaps.</p></li>';
+            }
+        };
+
+        // --- 4. MAIN EXECUTION: Check token and fetch all data ---
+        if (token) {
+            fetchUserData();
+            fetchUserCourses();
+            fetchUserWishlist();
+            fetchUserRoadmaps();
+
+            // Handle progress bars (demo)
+            // You can replace this with real data later
+            const demoCourses = [
+                { id: 1, progress: 75, completed: false }, { id: 2, progress: 20, completed: false },
+                { id: 3, progress: 100, completed: true }, { id: 4, progress: 100, completed: true }
+            ];
+            const coursesInProgressCount = demoCourses.filter(c => !c.completed).length;
+            const coursesCompletedCount = demoCourses.filter(c => c.completed).length;
+            const totalCourses = demoCourses.length;
+            coursesInProgressSpan.textContent = coursesInProgressCount;
+            coursesCompletedSpan.textContent = coursesCompletedCount;
+            const inProgressPercentage = totalCourses > 0 ? (coursesInProgressCount / totalCourses) * 100 : 0;
+            inProgressBar.style.width = `${inProgressPercentage}%`;
+            inProgressText.textContent = `${Math.round(inProgressPercentage)}%`;
+            const completedPercentage = totalCourses > 0 ? (coursesCompletedCount / totalCourses) * 100 : 0;
+            completedBar.style.width = `${completedPercentage}%`;
+            completedText.textContent = `${Math.round(completedPercentage)}%`;
+        } else {
+            alert('You are not logged in. Please sign in to view this page.');
+            window.location.href = 'signin.html';
+        }
+
+        // --- 5. EVENT LISTENERS: For user interactions ---
+        editProfileBtn.addEventListener('click', () => {
+            profileModal.style.display = 'block';
+        });
+        modalCloseBtn.addEventListener('click', () => {
+            profileModal.style.display = 'none';
+        });
+        window.onclick = function(event) {
+            if (event.target == profileModal) {
+                profileModal.style.display = "none";
+            }
+        };
+
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(profileForm);
+            const data = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                bio: formData.get('bio')
+            };
+            try {
+                const response = await fetch('http://localhost:5000/api/profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                    body: JSON.stringify(data)
+                });
+                if (!response.ok) throw new Error('Failed to update profile');
+                alert('Profile updated successfully!');
+                fetchUserData(); // Refresh user data
+                profileModal.style.display = 'none';
+            } catch (error) {
+                console.error(error);
+                alert(error.message);
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('token');
+            alert('You have been logged out.');
+            window.location.href = 'signin.html';
+        });
+
+        const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
+        const contentSections = document.querySelectorAll('.content-section');
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                const contentId = item.getAttribute('data-content');
+                if (!contentId) return;
+                e.preventDefault();
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                contentSections.forEach(section => section.classList.remove('active'));
+                const selectedSection = document.getElementById(contentId + 'Content');
+                if (selectedSection) {
+                    selectedSection.classList.add('active');
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

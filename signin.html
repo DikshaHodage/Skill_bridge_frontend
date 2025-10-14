@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - SkillForge</title>
+    <link rel="stylesheet" href="style.css"/>
+</head>
+<body class="signin-page">
+    <div class="floating-element floating-1"></div>
+    <div class="floating-element floating-2"></div>
+    <div class="floating-element floating-3"></div>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="logo">SKILLBRIDGE</div>
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Sign in to continue your learning journey</p>
+        </div>
+
+        <form class="auth-form" id="signinForm" novalidate>
+            <div class="form-group">
+                <label class="form-label" for="email">Email Address</label>
+                <input 
+                    type="email" 
+                    class="form-input" 
+                    id="email" 
+                    name="email" 
+                    placeholder="Enter your email address"
+                    required
+                    autocomplete="email"
+                >
+                <div class="error-message">Please enter a valid email address</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <div class="password-group">
+                    <input 
+                        type="password" 
+                        class="form-input" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password"
+                    >
+                    <button type="button" class="password-toggle" id="passwordToggle">
+                        👁️
+                    </button>
+                </div>
+                <div class="error-message">Password is required</div>
+            </div>
+
+            <div class="form-options">
+                <div class="checkbox-group">
+                    <input type="checkbox" class="checkbox-input" id="rememberMe" name="rememberMe">
+                    <label class="checkbox-label" for="rememberMe">Remember me</label>
+                </div>
+                <a href="#" class="forgot-password" id="forgotPasswordLink">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                Sign In
+            </button>
+        </form>
+
+        <div class="social-divider">
+            <span>or continue with</span>
+        </div>
+
+        <div class="social-buttons">
+            <a href="#" class="social-btn google" id="googleLogin">
+                <span>🌐</span> Google
+            </a>
+            <a href="#" class="social-btn github" id="githubLogin">
+                <span>⚡</span> GitHub
+            </a>
+        </div>
+
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+        </div>
+    </div>
+
+    <script>
+        class SigninValidator {
+            constructor() {
+                this.form = document.getElementById('signinForm');
+                this.submitBtn = document.getElementById('submitBtn');
+                this.passwordToggle = document.getElementById('passwordToggle');
+                this.passwordInput = document.getElementById('password');
+                this.initializeValidation();
+            }
+
+            initializeValidation() {
+                // Real-time validation on input
+                const inputs = this.form.querySelectorAll('.form-input');
+                inputs.forEach(input => {
+                    input.addEventListener('blur', () => this.validateField(input));
+                    input.addEventListener('input', () => this.clearError(input));
+                });
+
+                // Password toggle functionality
+                this.passwordToggle.addEventListener('click', () => this.togglePasswordVisibility());
+
+                // Form submission
+                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+
+                // Social login handlers
+                document.getElementById('googleLogin').addEventListener('click', (e) => this.handleSocialLogin(e, 'google'));
+                document.getElementById('githubLogin').addEventListener('click', (e) => this.handleSocialLogin(e, 'github'));
+
+                // Forgot password handler
+                document.getElementById('forgotPasswordLink').addEventListener('click', (e) => this.handleForgotPassword(e));
+            }
+
+            validateField(input) {
+                const group = input.closest('.form-group');
+                let isValid = true;
+                let errorMessage = '';
+
+                switch (input.type) {
+                    case 'email':
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!input.value.trim()) {
+                            isValid = false;
+                            errorMessage = 'Email address is required';
+                        } else if (!emailRegex.test(input.value)) {
+                            isValid = false;
+                            errorMessage = 'Please enter a valid email address';
+                        }
+                        break;
+
+                    case 'password':
+                        if (!input.value.trim()) {
+                            isValid = false;
+                            errorMessage = 'Password is required';
+                        } else if (input.value.length < 6) {
+                            isValid = false;
+                            errorMessage = 'Password must be at least 6 characters long';
+                        }
+                        break;
+                }
+
+                this.setFieldState(group, isValid, errorMessage);
+                return isValid;
+            }
+
+            setFieldState(group, isValid, errorMessage = '') {
+                const errorEl = group.querySelector('.error-message');
+                
+                group.classList.remove('error', 'success');
+                
+                if (isValid) {
+                    group.classList.add('success');
+                } else {
+                    group.classList.add('error');
+                    if (errorEl && errorMessage) {
+                        errorEl.textContent = errorMessage;
+                    }
+                }
+            }
+
+            clearError(input) {
+                const group = input.closest('.form-group');
+                group.classList.remove('error');
+            }
+
+            togglePasswordVisibility() {
+                const type = this.passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                this.passwordInput.setAttribute('type', type);
+                this.passwordToggle.textContent = type === 'password' ? '👁️' : '🙈';
+            }
+
+            validateForm() {
+                let isValid = true;
+                const inputs = this.form.querySelectorAll('.form-input');
+                
+                inputs.forEach(input => {
+                    if (!this.validateField(input)) {
+                        isValid = false;
+                    }
+                });
+
+                return isValid;
+            }
+
+            async handleSubmit(e) {
+                e.preventDefault();
+
+                if (!this.validateForm()) {
+                    return;
+                }
+
+                // Show loading state
+                this.submitBtn.classList.add('loading');
+                this.submitBtn.textContent = '';
+
+                try {
+                    // Get form data
+                    const formData = new FormData(this.form);
+                    const email = formData.get('email');
+                    const password = formData.get('password');
+
+                    // Make API call to backend
+                    const response = await fetch('http://localhost:5000/api/auth/signin', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email, password })
+                    });
+                    
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        alert('Welcome back! Signed in successfully.');
+                        console.log('User logged in. Token:', result.token);
+                        localStorage.setItem('token', result.token);
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        throw new Error(result.msg || 'Invalid email or password.');
+                    }
+                    
+                } catch (error) {
+                    // Show error message
+                    this.showLoginError(error.message);
+                } finally {
+                    // Reset button
+                    this.submitBtn.classList.remove('loading');
+                    this.submitBtn.textContent = 'Sign In';
+                }
+            }
+
+            showLoginError(message) {
+                const emailGroup = document.getElementById('email').closest('.form-group');
+                const passwordGroup = document.getElementById('password').closest('.form-group');
+                
+                this.setFieldState(emailGroup, false, message);
+                this.setFieldState(passwordGroup, false, '');
+            }
+
+            handleSocialLogin(e, provider) {
+                e.preventDefault();
+                
+                // Show loading state
+                const button = e.currentTarget;
+                const originalText = button.innerHTML;
+                button.style.pointerEvents = 'none';
+                button.innerHTML = '<span>🔄</span> Connecting...';
+                
+                // Simulate social login
+                setTimeout(() => {
+                    alert(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login would be handled here`);
+                    button.style.pointerEvents = 'auto';
+                    button.innerHTML = originalText;
+                }, 1500);
+            }
+
+            handleForgotPassword(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                if (email) {
+                    alert(`Password reset link would be sent to: ${email}`);
+                } else {
+                    alert('Please enter your email address first, then click "Forgot password?"');
+                    document.getElementById('email').focus();
+                }
+            }
+        }
+
+        // Initialize validation when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new SigninValidator();
+        });
+
+        // Add some demo functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add demo credentials hint
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            
+            // Show demo credentials on double click
+            emailInput.addEventListener('dblclick', () => {
+                if (confirm('Use demo credentials? (demo@skillforge.com / demo123)')) {
+                    emailInput.value = 'demo@skillforge.com';
+                    passwordInput.value = 'demo123';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

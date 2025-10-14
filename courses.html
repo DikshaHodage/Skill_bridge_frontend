@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses & Roadmaps - SkillBridge</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* New Course Card Design */
+        .course-card-new {
+            background: var(--dark-elevated);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .course-card-new::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.1), transparent 50%, rgba(0, 188, 212, 0.1));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .course-card-new:hover::before {
+            opacity: 1;
+        }
+
+        .course-card-new:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 188, 212, 0.3);
+            border-color: var(--accent-purple);
+        }
+
+        .course-card-new .course-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--neutral-white);
+            margin-bottom: 0.5rem;
+        }
+
+        .course-card-new .course-description {
+            flex-grow: 1;
+        }
+
+        .course-card-new .course-footer {
+            margin-top: 1.5rem;
+        }
+
+        .course-card-new .btn {
+            width: 100%;
+            text-align: center;
+        }
+
+        .course-header-new {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .course-category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .course-category-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .wishlist-btn {
+            background: none;
+            border: none;
+            font-size: 2.5rem;
+            color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            line-height: 1;
+            padding: 0;
+            margin-left: 1rem;
+            position: relative;
+             z-index: 2;
+        }
+
+        .wishlist-btn:hover {
+            color: rgba(255, 255, 255, 0.8);
+            transform: scale(1.1);
+        }
+
+        .wishlist-btn.active {
+            color: #ff4d6d;
+        }
+        .roadmap-save-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .roadmap-save-btn:hover {
+            color: rgba(255, 255, 255, 0.8);
+            transform: scale(1.1);
+        }
+
+        .roadmap-save-btn.active {
+            color: var(--primary-cyan);
+        }
+
+        /* --- UPDATED MODAL STYLES --- */
+        .modal-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-content p {
+            flex-grow: 1;
+            line-height: 1.6;
+        }
+        .modal-footer {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Courses & <span class="highlight">Roadmaps</span></h1>
+            <p>Master cutting-edge technologies with our comprehensive learning paths. From beginner to expert, we provide structured roadmaps that guide you through every step of your journey.</p>
+        </div>
+        <div class="filters">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="beginner">Beginner</button>
+                    <button class="filter-btn" data-filter="intermediate">Intermediate</button>
+                    <button class="filter-btn" data-filter="advanced">Advanced</button>
+                </div>
+                <div class="filter-group">
+                    <button class="filter-btn" data-filter="free">Free</button>
+                    <button class="filter-btn" data-filter="premium">Premium</button>
+                </div>
+                <input type="text" class="search-box" placeholder="Search courses..." aria-label="Search courses">
+            </div>
+        </div>
+
+        <div class="categories">
+            <div class="category">
+                <h2 class="category-title">Web Development</h2>
+                <div class="course-category-grid">
+                    <div class="course-card-new" data-level="intermediate" data-type="premium" data-course-id="infosys-web-dev">
+                        <div class="course-header-new">
+                            <h3 class="course-title">Infosys Springboard Web Dev</h3>
+                            <button class="wishlist-btn">♡</button>
+                        </div>
+                        <p class="course-description">Free access to a front-end web development certification course from Infosys Springboard, covering HTML, CSS, and JavaScript.</p>
+                        <div class="course-stats">
+                            <span class="course-stat">⏱️ 5 days</span>
+                            <span class="course-stat">👥 300+ institutions</span>
+                            <span class="course-stat">⭐ 4.8</span>
+                        </div>
+                        <div class="course-tags">
+                            <span class="tag">HTML5</span>
+                            <span class="tag">CSS3</span>
+                            <span class="tag">JavaScript</span>
+                            <span class="tag">Certification</span>
+                        </div>
+                        <div class="course-footer">
+                            <span class="course-price free">Free</span>
+                            <a href="https://infyspringboard.onwingspan.com/web/" target="_blank" class="btn enroll-btn btn-outline">View Course</a>
+                        </div>
+                    </div>
+
+                    <div class="course-card-new" data-level="advanced" data-type="premium" data-course-id="udemy-full-stack-js">
+                        <div class="course-header-new">
+                            <h3 class="course-title">Udemy Full Stack JavaScript</h3>
+                            <button class="wishlist-btn">♡</button>
+                        </div>
+                        <p class="course-description">Udemy offers a wide range of full-stack courses covering Node.js, Express, MongoDB, and React, with over 14 million learners.</p>
+                        <div class="course-stats">
+                            <span class="course-stat">⏱️ 60+ hours</span>
+                            <span class="course-stat">👥 14M+ learners</span>
+                            <span class="course-stat">⭐ 4.5+</span>
+                        </div>
+                        <div class="course-tags">
+                            <span class="tag">Node.js</span>
+                            <span class="tag">React</span>
+                            <span class="tag">MongoDB</span>
+                            <span class="tag">Express</span>
+                        </div>
+                        <div class="course-footer">
+                            <span class="course-price">$149</span>
+                            <a href="https://www.udemy.com/topic/web-development/" target="_blank" class="btn enroll-btn btn-primary">Enroll Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <div class="category">
+                <h2 class="category-title">Data Science & AI</h2>
+                <div class="course-category-grid">
+                    <div class="course-card-new" data-level="intermediate" data-type="premium" data-course-id="coursera-ml-spec">
+                        <div class="course-header-new">
+                            <h3 class="course-title">Coursera: Machine Learning Specialization</h3>
+                            <button class="wishlist-btn">♡</button>
+                        </div>
+                        <p class="course-description">Taught by Andrew Ng, this course provides a broad introduction to machine learning, data mining, and statistical pattern recognition.</p>
+                        <div class="course-stats">
+                            <span class="course-stat">⏱️ 60 hours</span>
+                            <span class="course-stat">👥 4M+ learners</span>
+                            <span class="course-stat">⭐ 4.9</span>
+                        </div>
+                        <div class="course-tags">
+                            <span class="tag">AI</span>
+                            <span class="tag">Machine Learning</span>
+                            <span class="tag">Python</span>
+                            <span class="tag">Coursera</span>
+                        </div>
+                        <div class="course-footer">
+                            <span class="course-price">$49/mo</span>
+                            <a href="https://www.coursera.org/specializations/machine-learning-introduction" target="_blank" class="btn enroll-btn btn-primary">Enroll Now</a>
+                        </div>
+                    </div>
+                    
+                    <div class="course-card-new" data-level="advanced" data-type="premium" data-course-id="ms-ai-fundamentals">
+                        <div class="course-header-new">
+                            <h3 class="course-title">Microsoft AI Fundamentals</h3>
+                            <button class="wishlist-btn">♡</button>
+                        </div>
+                        <p class="course-description">Explore the fundamentals of artificial intelligence (AI) and the core concepts of machine learning, computer vision, and NLP.</p>
+                        <div class="course-stats">
+                            <span class="course-stat">⏱️ 30 hours</span>
+                            <span class="course-stat">👥 500k+ learners</span>
+                            <span class="course-stat">⭐ 4.6</span>
+                        </div>
+                        <div class="course-tags">
+                            <span class="tag">AI</span>
+                            <span class="tag">Azure</span>
+                            <span class="tag">Machine Learning</span>
+                            <span class="tag">Certification</span>
+                        </div>
+                        <div class="course-footer">
+                            <span class="course-price">$99</span>
+                            <a href="https://docs.microsoft.com/en-us/learn/certifications/azure-ai-fundamentals/" target="_blank" class="btn enroll-btn btn-primary">Enroll Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="category">
+                <h2 class="category-title">Cybersecurity</h2>
+                <div class="course-category-grid">
+                    <div class="course-card-new" data-level="beginner" data-type="premium" data-course-id="google-cybersecurity-cert">
+                        <div class="course-header-new">
+                            <h3 class="course-title">Google Cybersecurity Professional Certificate</h3>
+                            <button class="wishlist-btn">♡</button>
+                        </div>
+                        <p class="course-description">This program teaches the basics of cybersecurity and helps you get job-ready in under six months.</p>
+                        <div class="course-stats">
+                            <span class="course-stat">⏱️ 200 hours</span>
+                            <span class="course-stat">👥 100k+ learners</span>
+                            <span class="course-stat">⭐ 4.8</span>
+                        </div>
+                        <div class="course-tags">
+                            <span class="tag">Cybersecurity</span>
+                            <span class="tag">Google</span>
+                            <span class="tag">Networking</span>
+                            <span class="tag">Certification</span>
+                        </div>
+                        <div class="course-footer">
+                            <span class="course-price">$39/mo</span>
+                            <a href="https://www.coursera.org/professional-certificates/google-cybersecurity" target="_blank" class="btn enroll-btn btn-primary">Enroll Now</a>
+                        </div>
+                    </div>
+                    
+                    <div class="course-card-new" data-level="intermediate" data-type="free" data-course-id="network-security-basics">
+                        <div class="course-header-new">
+                            <h3 class="course-title">Network Security Basics</h3>
+                            <button class="wishlist-btn">♡</button>
+                        </div>
+                        <p class="course-description">A foundational course on securing computer networks and protecting data from unauthorized access.</p>
+                        <div class="course-stats">
+                            <span class="course-stat">⏱️ 20 hours</span>
+                            <span class="course-stat">👥 25,000 students</span>
+                            <span class="course-stat">⭐ 4.5</span>
+                        </div>
+                        <div class="course-tags">
+                            <span class="tag">Networking</span>
+                            <span class="tag">Firewalls</span>
+                            <span class="tag">VPN</span>
+                            <span class="tag">Intrusion Detection</span>
+                        </div>
+                        <div class="course-footer">
+                            <span class="course-price free">Free</span>
+                            <a href="#" class="btn enroll-btn btn-outline">Start Learning</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="category">
+                <h2 class="category-title">Cloud Computing</h2>
+                <div class="course-category-grid">
+                    <div class="course-card-new" data-level="beginner" data-type="premium" data-course-id="aws-solutions-architect">
+                        <div class="course-header-new">
+                            <h3 class="course-title">AWS Certified Solutions Architect</h3>
+                            <button class="wishlist-btn">♡</button>
+                        </div>
+                        <p class="course-description">Prepare for the AWS Solutions Architect exam with this comprehensive course covering cloud architecture and services.</p>
+                        <div class="course-stats">
+                            <span class="course-stat">⏱️ 50 hours</span>
+                            <span class="course-stat">👥 15,600 students</span>
+                            <span class="course-stat">⭐ 4.8</span>
+                        </div>
+                        <div class="course-tags">
+                            <span class="tag">AWS</span>
+                            <span class="tag">Cloud</span>
+                            <span class="tag">Solution Architecture</span>
+                            <span class="tag">Certification</span>
+                        </div>
+                        <div class="course-footer">
+                            <span class="course-price">$129</span>
+                            <a href="https://aws.amazon.com/certification/certified-solutions-architect-associate/" target="_blank" class="btn enroll-btn btn-primary">Enroll Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="roadmap-section">
+            <h2 class="roadmap-title">Learning Roadmaps</h2>
+            
+            <div class="generate-roadmap">
+                <div class="generate-form">
+                    <h3>Generate Your Custom Roadmap</h3>
+
+                    <div class="form-group">
+                    <label class="form-label" for="learningDomain">What do you want to learn?</label>
+                    <select class="form-select" id="learningDomain">
+                    <option value="">Select a domain</option>
+                    <optgroup label="Tech Roadmaps">
+                    <option value="web-development">Web Development</option>
+                    <option value="backend-development">Backend Development</option>
+                    <option value="data-science">Data Science & AI</option>
+                    <option value="cybersecurity">Cybersecurity</option>
+                    <option value="cloud-computing">Cloud Computing</option>
+                    <option value="devops">DevOps</option>
+                    </optgroup>
+                    <optgroup label="Business & Finance Roadmaps">
+                    <option value="investing">Investing & Stock Market</option>
+                     <option value="business-management">Business Management</option>
+                    <option value="project-management">Project Management</option>
+                    </optgroup>
+                    </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="currentLevel">Your Current Level</label>
+                        <select class="form-select" id="currentLevel">
+                            <option value="">Select your level</option>
+                            <option value="beginner">Complete Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="timeCommitment">Time Commitment (hours per week)</label>
+                        <select class="form-select" id="timeCommitment">
+                            <option value="">Select time commitment</option>
+                            <option value="5">5-10 hours/week</option>
+                            <option value="10">10-15 hours/week</option>
+                            <option value="20">20+ hours/week</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="learningStyle">Preferred Learning Style</label>
+                        <select class="form-select" id="learningStyle">
+                            <option value="">Select learning style</option>
+                            <option value="hands-on">Hands-on Projects</option>
+                            <option value="theoretical">Theory First</option>
+                            <option value="mixed">Mixed Approach</option>
+                        </select>
+                    </div>
+                    <button class="generate-btn" onclick="generateRoadmap()">Generate My Roadmap</button>
+                </div>
+            </div>
+
+            <div class="roadmap-grid">
+                <div class="roadmap-card" data-roadmap-id="frontend">
+                    <button class="roadmap-save-btn">🔖</button>
+                    <div class="roadmap-icon">🌐</div>
+                    <h3>Frontend Developer</h3>
+                    <p>Complete roadmap to become a frontend developer with modern frameworks and tools</p>
+                    <button class="roadmap-btn" onclick="viewRoadmap('frontend')">View Roadmap</button>
+                </div>
+                <div class="roadmap-card" data-roadmap-id="backend">
+                    <button class="roadmap-save-btn">🔖</button>
+                    <div class="roadmap-icon">⚙️</div>
+                    <h3>Backend Developer</h3>
+                    <p>Server-side development path covering databases, APIs, and cloud deployment</p>
+                    <button class="roadmap-btn" onclick="viewRoadmap('backend')">View Roadmap</button>
+                </div>
+                <div class="roadmap-card" data-roadmap-id="mobile">
+                    <button class="roadmap-save-btn">🔖</button>
+                    <div class="roadmap-icon">📱</div>
+                    <h3>Mobile Developer</h3>
+                    <p>Cross-platform mobile development with React Native and Flutter</p>
+                    <button class="roadmap-btn" onclick="viewRoadmap('mobile')">View Roadmap</button>
+                </div>
+                <div class="roadmap-card" data-roadmap-id="ai-ml">
+                    <button class="roadmap-save-btn">🔖</button>
+                    <div class="roadmap-icon">🤖</div>
+                    <h3>AI/ML Engineer</h3>
+                    <p>Artificial Intelligence and Machine Learning specialization track</p>
+                    <button class="roadmap-btn" onclick="viewRoadmap('ai-ml')">View Roadmap</button>
+                </div>
+                <div class="roadmap-card" data-roadmap-id="devops">
+                    <button class="roadmap-save-btn">🔖</button>
+                    <div class="roadmap-icon">☁️</div>
+                    <h3>DevOps Engineer</h3>
+                    <p>Infrastructure, automation, and deployment pipeline expertise</p>
+                    <button class="roadmap-btn" onclick="viewRoadmap('devops')">View Roadmap</button>
+                </div>
+                <div class="roadmap-card" data-roadmap-id="data-science">
+                    <button class="roadmap-save-btn">🔖</button>
+                    <div class="roadmap-icon">📊</div>
+                    <h3>Data Scientist</h3>
+                    <p>Data analysis, visualization, and statistical modeling pathway</p>
+                    <button class="roadmap-btn" onclick="viewRoadmap('data-science')">View Roadmap</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="customModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="modalCloseBtn">&times;</span>
+            <h3 id="modalTitle">Default Title</h3>
+            <p id="modalMessage">Default message.</p>
+            <div class="modal-footer" id="modalFooter">
+                </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        let currentFilter = 'all';
+        let currentSearchTerm = '';
+
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const searchBox = document.querySelector('.search-box');
+        const courseCards = document.querySelectorAll('.course-card-new');
+        const modal = document.getElementById('customModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const modalFooter = document.getElementById('modalFooter');
+        const roadmapButtons = document.querySelectorAll('.roadmap-btn');
+        const generateRoadmapButton = document.querySelector('.generate-btn');
+
+        function showModal(title, message, buttons = []) {
+            modalTitle.textContent = title;
+            modalMessage.innerHTML = message.replace(/\n/g, '<br>');
+            modalFooter.innerHTML = '';
+            if (buttons.length > 0) {
+                buttons.forEach(btnInfo => {
+                    const button = document.createElement('button');
+                    button.textContent = btnInfo.text;
+                    button.className = btnInfo.class || 'btn btn-primary';
+                    button.onclick = () => {
+                        if (btnInfo.action) btnInfo.action();
+                        closeModal();
+                    };
+                    modalFooter.appendChild(button);
+                });
+            } else {
+                const closeButton = document.createElement('button');
+                closeButton.textContent = 'Close';
+                closeButton.className = 'btn btn-primary';
+                closeButton.onclick = closeModal;
+                modalFooter.appendChild(closeButton);
+            }
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        async function updateWishlist(courseId, button) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showModal('Action Required', 'Please log in or sign up to save courses to your wishlist.', [
+                    { text: 'Log In', class: 'btn btn-primary', action: () => { window.location.href = 'signin.html'; } },
+                    { text: 'Sign Up', class: 'btn btn-outline', action: () => { window.location.href = 'signup.html'; } }
+                ]);
+                return;
+            }
+            try {
+                const response = await fetch('http://localhost:5000/api/courses/wishlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                    body: JSON.stringify({ courseId })
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        showModal('Session Expired', 'Your session has expired. Please log in again to save items.', [
+                            { text: 'Log In', class: 'btn btn-primary', action: () => { window.location.href = 'signin.html'; } },
+                            { text: 'Close', class: 'btn btn-outline' }
+                        ]);
+                    } else {
+                        throw new Error('Server failed to update wishlist.');
+                    }
+                    return; 
+                }
+
+                const data = await response.json();
+                if (data.wishlistedCourses.includes(courseId)) {
+                    button.classList.add('active');
+                    button.textContent = '♥';
+                } else {
+                    button.classList.remove('active');
+                    button.textContent = '♡';
+                }
+            } catch (error) {
+                console.error('Wishlist Error:', error);
+                showModal('Error', 'Could not update wishlist. Please try again later.');
+            }
+        }
+
+        async function fetchAndSetWishlistState() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            try {
+                const response = await fetch('http://localhost:5000/api/courses/wishlist', {
+                    headers: { 'x-auth-token': token }
+                });
+                if (!response.ok) return;
+                const wishlistedCourses = await response.json();
+                if (Array.isArray(wishlistedCourses)) {
+                    const wishlistBtns = document.querySelectorAll('.wishlist-btn');
+                    wishlistBtns.forEach(btn => {
+                        const courseId = btn.closest('.course-card-new').dataset.courseId;
+                        if (wishlistedCourses.includes(courseId)) {
+                            btn.classList.add('active');
+                            btn.textContent = '♥';
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching wishlist:', error);
+            }
+        }
+
+        async function updateMyRoadmap(roadmapId, button) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showModal('Action Required', 'Please log in or sign up to save roadmaps.', [
+                    { text: 'Log In', class: 'btn btn-primary', action: () => { window.location.href = 'signin.html'; } },
+                    { text: 'Sign Up', class: 'btn btn-outline', action: () => { window.location.href = 'signup.html'; } }
+                ]);
+                return;
+            }
+            try {
+                const response = await fetch('http://localhost:5000/api/roadmaps/my-roadmaps', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                    body: JSON.stringify({ roadmapId })
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        showModal('Session Expired', 'Your session has expired. Please log in again to save items.', [
+                            { text: 'Log In', class: 'btn btn-primary', action: () => { window.location.href = 'signin.html'; } },
+                            { text: 'Close', class: 'btn btn-outline' }
+                        ]);
+                    } else {
+                        throw new Error('Server failed to update roadmap.');
+                    }
+                    return;
+                }
+                
+                const data = await response.json();
+                if (data.savedRoadmaps.includes(roadmapId)) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            } catch (error) {
+                console.error('Roadmap Save Error:', error);
+                showModal('Error', 'Could not save roadmap. Please try again later.');
+            }
+        }
+
+        async function fetchAndSetRoadmapState() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            try {
+                const response = await fetch('http://localhost:5000/api/roadmaps/my-roadmaps', {
+                    headers: { 'x-auth-token': token }
+                });
+                if (!response.ok) return;
+                const savedRoadmaps = await response.json();
+                if (Array.isArray(savedRoadmaps)) {
+                    const roadmapSaveBtns = document.querySelectorAll('.roadmap-save-btn');
+                    roadmapSaveBtns.forEach(btn => {
+                        const roadmapId = btn.closest('.roadmap-card').dataset.roadmapId;
+                        if (savedRoadmaps.includes(roadmapId)) {
+                            btn.classList.add('active');
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching saved roadmaps:', error);
+            }
+        }
+
+        function init() {
+            setupEventListeners();
+            showAllCourses();
+            fetchAndSetWishlistState();
+            fetchAndSetRoadmapState();
+            setupAnimations();
+        }
+
+        function setupEventListeners() {
+            filterBtns.forEach(btn => btn.addEventListener('click', handleFilterClick));
+            searchBox.addEventListener('input', handleSearch);
+
+            const wishlistBtns = document.querySelectorAll('.wishlist-btn');
+            wishlistBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const courseCard = e.target.closest('.course-card-new');
+                    const courseId = courseCard.dataset.courseId;
+                    updateWishlist(courseId, btn);
+                });
+            });
+
+            const roadmapSaveBtns = document.querySelectorAll('.roadmap-save-btn');
+            roadmapSaveBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const roadmapCard = e.target.closest('.roadmap-card');
+                    const roadmapId = roadmapCard.dataset.roadmapId;
+                    updateMyRoadmap(roadmapId, btn);
+                });
+            });
+
+            document.querySelectorAll('.enroll-btn').forEach(btn => btn.addEventListener('click', handleEnrollment));
+            roadmapButtons.forEach(btn => btn.addEventListener('click', handleRoadmapClick));
+            generateRoadmapButton.addEventListener('click', generateRoadmap);
+
+            modalCloseBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
+            });
+        }
+
+        function handleFilterClick(e) {
+            const filter = e.target.dataset.filter;
+            filterBtns.forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            currentFilter = filter;
+            filterCourses();
+        }
+
+        function handleSearch(e) {
+            currentSearchTerm = e.target.value.toLowerCase();
+            filterCourses();
+        }
+
+        function filterCourses() {
+            courseCards.forEach(card => {
+                const level = card.dataset.level;
+                const type = card.dataset.type;
+                const title = card.querySelector('.course-title').textContent.toLowerCase();
+                const description = card.querySelector('.course-description').textContent.toLowerCase();
+                const tags = Array.from(card.querySelectorAll('.tag')).map(tag => tag.textContent.toLowerCase());
+                let filterMatch = true;
+                if (currentFilter !== 'all') {
+                    if (currentFilter === 'free' || currentFilter === 'premium') {
+                        filterMatch = type === currentFilter;
+                    } else {
+                        filterMatch = level === currentFilter;
+                    }
+                }
+                const searchMatch = currentSearchTerm === '' ||
+                    title.includes(currentSearchTerm) ||
+                    description.includes(currentSearchTerm) ||
+                    tags.some(tag => tag.includes(currentSearchTerm));
+                if (filterMatch && searchMatch) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function showAllCourses() {
+            courseCards.forEach(card => {
+                card.style.display = 'flex';
+            });
+        }
+
+        function handleEnrollment(e) {
+            e.preventDefault();
+            const courseCard = e.target.closest('.course-card-new');
+            if (!courseCard) return;
+            const courseTitle = courseCard.querySelector('.course-title').textContent;
+            const courseLink = e.target.closest('a');
+            if (courseLink && courseLink.href && !courseLink.href.endsWith('#')) {
+                showModal('Redirecting...', `You are being redirected to "${courseTitle}".`);
+                setTimeout(() => {
+                    window.open(courseLink.href, '_blank');
+                    closeModal();
+                }, 1500);
+            } else {
+                showModal('Enrollment Successful!', `You have successfully enrolled in "${courseTitle}". Check your dashboard to start learning!`);
+            }
+        }
+        
+        function handleRoadmapClick(e) {
+            e.preventDefault();
+            const type = e.target.closest('.roadmap-card').dataset.roadmapId;
+            viewRoadmap(type);
+        }
+
+        function generateRoadmap() {
+            const domain = document.getElementById('learningDomain').value;
+            const level = document.getElementById('currentLevel').value;
+            if (!domain || !level) {
+                showModal('Missing Information', 'Please select a domain and your current level to generate a roadmap.');
+                return;
+            }
+            window.location.href = `custom-roadmap.html?domain=${domain}&level=${level}`;
+        }
+
+        function viewRoadmap(type) {
+            const roadmapUrls = {
+                'frontend': 'https://roadmap.sh/frontend',
+                'backend': 'https://roadmap.sh/backend',
+                'mobile': 'https://roadmap.sh/react-native',
+                'ai-ml': 'https://roadmap.sh/ai-data-scientist',
+                'devops': 'https://roadmap.sh/devops',
+                'data-science': 'https://roadmap.sh/ai-data-scientist'
+            };
+            const url = roadmapUrls[type];
+            if (url) {
+                window.open(url, '_blank');
+            } else {
+                alert('Sorry, a link for this roadmap is not available.');
+            }
+        }
+
+        function setupAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in-visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            document.querySelectorAll('.course-card-new, .roadmap-card').forEach(card => {
+                observer.observe(card);
+            });
+        }
+
+        init();
+    });
+    </script>
+</body>
+</html>
