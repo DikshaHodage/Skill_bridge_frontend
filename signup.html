@@ -292,7 +292,7 @@
                     const formData = new FormData(this.form);
                     const data = Object.fromEntries(formData.entries());
 
-                    const response = await fetch('http://localhost:5000/api/auth/signup', {
+                    const response = await fetch('http://skillbridge-node-api-0082-dzeggfbdfagphwgk.eastasia-01.azurewebsites.net/api/auth/signup', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
