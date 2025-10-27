@@ -682,7 +682,7 @@
             try {
                 const myInterestsList = document.getElementById('myInterestsList');
                 if (!myInterestsList) return;
-                const response = await fetch('http://localhost:5000/api/courses/wishlist', {
+                const response = await fetch('http://skillbridge-node-api-0082-dzeggfbdfagphwgk.eastasia-01.azurewebsites.net/api/courses/wishlist', {
                     headers: { 'Content-Type': 'application/json', 'x-auth-token': token }
                 });
                 if (!response.ok) throw new Error('Failed to fetch wishlist');
@@ -787,7 +787,7 @@
                 bio: formData.get('bio')
             };
             try {
-                const response = await fetch('http://localhost:5000/api/profile', {
+                const response = await fetch('http://skillbridge-node-api-0082-dzeggfbdfagphwgk.eastasia-01.azurewebsites.net/api/profile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
                     body: JSON.stringify(data)
@@ -827,4 +827,5 @@
     });
 </script>
 </body>
+
 </html>
