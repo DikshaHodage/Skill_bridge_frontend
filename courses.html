@@ -528,7 +528,7 @@
                 return;
             }
             try {
-                const response = await fetch('http://localhost:5000/api/courses/wishlist', {
+                const response = await fetch('https://skillbridge-node-api-0082-dzeggfbdfagphwgk.eastasia-01.azurewebsites.net/api/courses/wishlist', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
                     body: JSON.stringify({ courseId })
@@ -564,7 +564,7 @@
             const token = localStorage.getItem('token');
             if (!token) return;
             try {
-                const response = await fetch('http://localhost:5000/api/courses/wishlist', {
+                const response = await fetch('https://skillbridge-node-api-0082-dzeggfbdfagphwgk.eastasia-01.azurewebsites.net/api/courses/wishlist', {
                     headers: { 'x-auth-token': token }
                 });
                 if (!response.ok) return;
